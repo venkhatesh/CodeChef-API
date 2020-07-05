@@ -12,21 +12,21 @@ go get github.com/venkhatesh/CodeChef-API
 ```
 
 ## API
-####/ongoing
+#### /ongoing
 * `GET` : Get all ongoing contest
 
-####/future
+#### /future
 * `GET` : Get all Upcoming Contest
 
-####/past
+#### /past
 * `GET` : Get all Past Contest
 
 ## Todo
 
--[x] Create Contest API
--[x] Create Profile API
--[ ] Create Solved Problems API
--[ ] Create all submitted problem API
--[ ] Create Codechef Discuss API
--[ ] Create Competitive programming Youtube Channel API
--[ ] Create Proper Project Structure
+- [x] Create Contest API
+- [x] Create Profile API
+- [ ] Create Solved Problems API
+- [ ] Create all submitted problem API
+- [ ] Create Codechef Discuss API
+- [ ] Create Competitive programming Youtube Channel API
+- [ ] Create Proper Project Structure
