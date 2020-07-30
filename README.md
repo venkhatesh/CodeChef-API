@@ -23,10 +23,10 @@ go get github.com/venkhatesh/CodeChef-API
 
 ## Todo
 
-- [x] Create Contest API
+- [x] Create Past Contest API
 - [x] Create Profile API
-- [ ] Create Solved Problems API
-- [ ] Create all submitted problem API
+- [x] Create Future Contest API
+- [x] Create Past API
 - [ ] Create Codechef Discuss API
-- [ ] Create Competitive programming Youtube Channel API
+- [ ] Add Pagination to Past Contest API
 - [ ] Create Proper Project Structure
