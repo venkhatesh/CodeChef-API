@@ -20,7 +20,7 @@ go get github.com/venkhatesh/CodeChef-API
 #### /future
 * `GET` : Get all Upcoming Contest
 
-#### /past
+#### /past/{page}
 * `GET` : Get all Past Contest
 
 ## Todo
@@ -29,6 +29,6 @@ go get github.com/venkhatesh/CodeChef-API
 - [x] Create Profile API
 - [x] Create Future Contest API
 - [x] Create Past API
+- [x] Add Pagination to Past Contest API
 - [ ] Create Codechef Discuss API
-- [ ] Add Pagination to Past Contest API
 - [ ] Create Proper Project Structure
