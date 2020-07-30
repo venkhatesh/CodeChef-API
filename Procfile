@@ -1,1 +1,1 @@
-web:go/ContestScraperAPI
+web: go/ContestScraperAPI
