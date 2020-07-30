@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -236,13 +237,17 @@ func HandleRequest() {
 	//	http.HandleFunc("/future", allFutureContest)
 	//	http.HandleFunc("/past/{page}", allPastContest)
 	//	log.Fatal(http.ListenAndServe(":80", nil))
-
+	port := os.Getenv("PORT")
+	fmt.Println(port)
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", homePage)
 	myRouter.HandleFunc("/ongoing", allOngoingContest)
 	myRouter.HandleFunc("/future", allFutureContest)
 	myRouter.HandleFunc("/past/{page}", allPastContest)
-	log.Fatal(http.ListenAndServe(":80", myRouter))
+	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 
 }
 func main() {
