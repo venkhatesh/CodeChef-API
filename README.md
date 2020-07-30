@@ -2,6 +2,8 @@
 
 A RESTful API for codechef Android App with GO.
 
+Link to CodeChef Android app [Github Link](https://github.com/venkhatesh/CodeChef-App)
+
 ## Installation and Run
 
 ```bash
