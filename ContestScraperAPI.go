@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/gorilla/mux"
 )
 
 type Contest struct {
@@ -244,23 +246,23 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 func HandleRequest() {
 	fmt.Println("Listening")
-	http.HandleFunc("/", homePage)
-	http.HandleFunc("/ongoing", allOngoingContest)
-	http.HandleFunc("/future", allFutureContest)
-	//http.HandleFunc("/past/{page}", allPastContest)
-	http.HandleFunc("/past", allPastContest)
-	log.Fatal(http.ListenAndServe(":80", nil))
-	// port := os.Getenv("PORT")
-	// fmt.Println(port)
-	// if port == "" {
-	// 	log.Fatal("$PORT must be set")
-	// }
-	// myRouter := mux.NewRouter().StrictSlash(true)
-	// myRouter.HandleFunc("/", homePage)
-	// myRouter.HandleFunc("/ongoing", allOngoingContest)
-	// myRouter.HandleFunc("/future", allFutureContest)
-	// myRouter.HandleFunc("/past/{page}", allPastContest)
-	// log.Fatal(http.ListenAndServe(":"+port, myRouter))
+	// http.HandleFunc("/", homePage)
+	// http.HandleFunc("/ongoing", allOngoingContest)
+	// http.HandleFunc("/future", allFutureContest)
+	// //http.HandleFunc("/past/{page}", allPastContest)
+	// http.HandleFunc("/past", allPastContest)
+	// log.Fatal(http.ListenAndServe(":80", nil))
+	port := os.Getenv("PORT")
+	fmt.Println(port)
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.HandleFunc("/", homePage)
+	myRouter.HandleFunc("/ongoing", allOngoingContest)
+	myRouter.HandleFunc("/future", allFutureContest)
+	myRouter.HandleFunc("/past", allPastContest)
+	log.Fatal(http.ListenAndServe(":"+port, myRouter))
 
 }
 func main() {
