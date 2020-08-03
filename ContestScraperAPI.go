@@ -5,19 +5,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strconv"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gorilla/mux"
 )
 
 type Contest struct {
 	Code  string `json:"Code"`
 	Name  string `json:"Name"`
-	Start string `json:"Start`
+	Start string `json:"Start"`
 	End   string `json:"End"`
+	Url   string `json:"Url"`
 }
 
 type Profile struct {
@@ -38,49 +36,49 @@ type JsonContestObject struct {
 	Data []Contest
 }
 
-func fetchPagedContest(whichContest int, page int) Contests {
+// func fetchPagedContest(whichContest int, page int) Contests {
 
-	fmt.Println("Page Number ", page)
+// 	fmt.Println("Page Number ", page)
 
-	res, err := http.Get("https://www.codechef.com/contests")
-	if err != nil {
-		fmt.Println("Error")
-	}
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		fmt.Println("Error")
-	}
-	allContest := Contests{}
-	doc.Find(".dataTable").Each(func(i int, s *goquery.Selection) {
-		if whichContest == i {
-			code := "Code"
-			name := "Name"
-			start := "Start"
-			end := "End"
-			s.Find("tr").Each(func(i int, r *goquery.Selection) {
-				if i > ((page*10)-10) && i <= (page*10) {
-					r.Find("td").Each(func(i int, t *goquery.Selection) {
-						switch i {
-						case 0:
-							code = t.Text()
-						case 1:
-							name = t.Text()
-							name = strings.TrimSpace(name)
-						case 2:
-							start = t.Text()
-						case 3:
-							end = t.Text()
-						}
-					})
-					randomContest := Contest{code, name, start, end}
-					allContest = append(allContest, randomContest)
-					//fmt.Println(code,name,start,end)
-				}
-			})
-		}
-	})
-	return allContest
-}
+// 	res, err := http.Get("https://www.codechef.com/contests")
+// 	if err != nil {
+// 		fmt.Println("Error")
+// 	}
+// 	doc, err := goquery.NewDocumentFromReader(res.Body)
+// 	if err != nil {
+// 		fmt.Println("Error")
+// 	}
+// 	allContest := Contests{}
+// 	doc.Find(".dataTable").Each(func(i int, s *goquery.Selection) {
+// 		if whichContest == i {
+// 			code := "Code"
+// 			name := "Name"
+// 			start := "Start"
+// 			end := "End"
+// 			s.Find("tr").Each(func(i int, r *goquery.Selection) {
+// 				if i > ((page*10)-10) && i <= (page*10) {
+// 					r.Find("td").Each(func(i int, t *goquery.Selection) {
+// 						switch i {
+// 						case 0:
+// 							code = t.Text()
+// 						case 1:
+// 							name = t.Text()
+// 							name = strings.TrimSpace(name)
+// 						case 2:
+// 							start = t.Text()
+// 						case 3:
+// 							end = t.Text()
+// 						}
+// 					})
+// 					randomContest := Contest{code, name, start, end}
+// 					allContest = append(allContest, randomContest)
+// 					//fmt.Println(code,name,start,end)
+// 				}
+// 			})
+// 		}
+// 	})
+// 	return allContest
+// }
 
 func fetchContest(whichContest int) Contests {
 	res, err := http.Get("https://www.codechef.com/contests")
@@ -108,25 +106,38 @@ func fetchContest(whichContest int) Contests {
 			name := "Name"
 			start := "Start"
 			end := "End"
+			url := "Url"
 			s.Find("tr").Each(func(i int, r *goquery.Selection) {
-				r.Find("td").Each(func(i int, t *goquery.Selection) {
-					switch i {
-					case 0:
-						code = t.Text()
-					case 1:
-						name = t.Text()
-						name = strings.TrimSpace(name)
-					case 2:
-						start = t.Text()
-					case 3:
-						end = t.Text()
-					}
-				})
-				randomContest := Contest{code, name, start, end}
-				allContest = append(allContest, randomContest)
-				//fmt.Println(code,name,start,end)
+				if i > 0 {
+					r.Find("td").Each(func(i int, t *goquery.Selection) {
+						switch i {
+						case 0:
+							code = t.Text()
+						case 1:
+							name = t.Text()
+							name = strings.TrimSpace(name)
+						case 2:
+							start = t.Text()
+						case 3:
+							end = t.Text()
+						}
+					})
+					r.Find("a").Each(func(q int, qu *goquery.Selection) {
+						fmt.Println("**dot**dot**")
+						urlDup, ok := qu.Attr("href")
+						if ok {
+							url = urlDup
+						}
+						// fmt.Println(qu.Attr("href"))
+					})
 
+					randomContest := Contest{code, name, start, end, url}
+					allContest = append(allContest, randomContest)
+					fmt.Println(code, name, start, end)
+
+				}
 			})
+
 		}
 	})
 	fmt.Println(allContest)
@@ -209,10 +220,11 @@ func allFutureContest(w http.ResponseWriter, r *http.Request) {
 }
 
 func allPastContest(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["page"]
-	keyPage, err := strconv.Atoi(key)
-	pastContestArrayList := fetchPagedContest(2, keyPage)
+	// vars := mux.Vars(r)
+	// key := vars["page"]
+	// keyPage, err := strconv.Atoi(key)
+	// pastContestArrayList := fetchPagedContest(2, keyPage)
+	pastContestArrayList := fetchContest(2)
 	ran := JsonContestObject{pastContestArrayList}
 	b, err := json.Marshal(ran)
 	if err != nil {
@@ -232,22 +244,23 @@ func homePage(w http.ResponseWriter, r *http.Request) {
 
 func HandleRequest() {
 	fmt.Println("Listening")
-	//	http.HandleFunc("/", homePage)
-	//	http.HandleFunc("/ongoing", allOngoingContest)
-	//	http.HandleFunc("/future", allFutureContest)
-	//	http.HandleFunc("/past/{page}", allPastContest)
-	//	log.Fatal(http.ListenAndServe(":80", nil))
-	port := os.Getenv("PORT")
-	fmt.Println(port)
-	if port == "" {
-		log.Fatal("$PORT must be set")
-	}
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/ongoing", allOngoingContest)
-	myRouter.HandleFunc("/future", allFutureContest)
-	myRouter.HandleFunc("/past/{page}", allPastContest)
-	log.Fatal(http.ListenAndServe(":"+port, myRouter))
+	http.HandleFunc("/", homePage)
+	http.HandleFunc("/ongoing", allOngoingContest)
+	http.HandleFunc("/future", allFutureContest)
+	//http.HandleFunc("/past/{page}", allPastContest)
+	http.HandleFunc("/past", allPastContest)
+	log.Fatal(http.ListenAndServe(":80", nil))
+	// port := os.Getenv("PORT")
+	// fmt.Println(port)
+	// if port == "" {
+	// 	log.Fatal("$PORT must be set")
+	// }
+	// myRouter := mux.NewRouter().StrictSlash(true)
+	// myRouter.HandleFunc("/", homePage)
+	// myRouter.HandleFunc("/ongoing", allOngoingContest)
+	// myRouter.HandleFunc("/future", allFutureContest)
+	// myRouter.HandleFunc("/past/{page}", allPastContest)
+	// log.Fatal(http.ListenAndServe(":"+port, myRouter))
 
 }
 func main() {
